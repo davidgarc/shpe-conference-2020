@@ -17,9 +17,14 @@ done
 
 echo ""
 echo "Coping to s3 templates"
-aws s3 cp --recursive --exclude "*template.yaml" templates "s3://resume-demo-configs-$1/templates/"
+aws s3 cp --recursive --exclude "*template.yaml" backend/templates "s3://resume-demo-configs-$1/templates/"
 
 echo ""
 echo "Deploying application"
-sam deploy --template-file packaged.yaml --stack-name "resume-demo-app-$1" --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides "Environment=$1"
+sam deploy --template-file backend/packaged.yaml --stack-name "resume-demo-app-$1" --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides "Environment=$1"
+
+echo ""
+echo "Coping to website assets"
+aws s3 cp --recursive public "s3://shpe-resume/"
+
 echo "Done deploying $1 application"
