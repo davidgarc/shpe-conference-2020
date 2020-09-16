@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: Resume API
+  description: Add and Get Experiences
+  version: 1.0.0
+tags:
+  - name: Experiences
+    description: |
+      Operations to manage maintenance of experiences.
+  - name: Endorsements 
+    description: |
+      Operations to manage maintenance of endorsements.
+x-amazon-apigateway-cors:
+  allowOrigins:
+    - '*'
+  allowMethods:
+    - GET
+    - POST
+  allowHeaders:
+    - authorization
+    - content-type
+  maxAge: 3600
+
+paths:
+  /experiences:
+    post:
+      summary: Add a new experience
+      description: Create a new experience with any details you like. This will return an id
+      tags:
+        - Experiences
+      responses:
+        201:
+          $ref: '#/components/responses/Created'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExperienceModel'
+
+  /experiences/{experienceId}:
+    parameters:
+      - $ref: '#/components/parameters/experienceId'
+    get:
+      summary: Get Experience details
+      description: Returns all the details for an experience with the provided id
+      tags:
+        - Experiences
+      responses:
+        200:
+          description: The request succeeded and the experience is included in the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperienceModel'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  parameters:
+    experienceId:
+      name: experienceId
+      in: path
+      description: Identifier for an experience
+      required: true
+      example: 09sl3415098gplmn
+      schema:
+        type: string
+
+  schemas:
+    ExperienceModel:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        comment:
+          type: string
+
+  responses:
+    Created: #201
+      description: The request succeeded and created a new experience
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+            required:
+              - id
+    NoContentUpdate: #204
+      description: The request succeeded and updated an existing experience
+    NoContentDelete: #204
+      description: The request finished processing and the experience was removed or did not exist
+    NotFound: #404
+      description: The requested experience was not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Could not find an experience with the specified id.
+            required:
+              - message
+
+    InternalServerError: #500
+      description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: An error occurred saving the experience.
+            required:
+              - message

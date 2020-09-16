@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Orders Demo App Lambda Shared Layers
+
+  Sample SAM Template for AWS
+
+Parameters:
+  Environment:
+    Description: Environment
+    Default: dev
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+      - dev
+    ConstraintDescription: Must specify a valid environment dev, test or prod.
+
+Mappings:
+  LayerNamesMap:
+    aws:
+      name: orders_demo_app_aws_layer
+
+Resources:
+  AwsLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Join ["_", [!FindInMap [LayerNamesMap, aws, name], !Ref 'Environment']]
+      Description: AWS Layer dependencies to be able to use AWS services
+      ContentUri: ../../src/sharedLayers/libs/awsLayer
+      CompatibleRuntimes:
+        - nodejs12.x
+      RetentionPolicy: Retain
+
+Outputs:
+  AwsLayer:
+    Description: "AWS Layer ARN"
+    Value: !Ref AwsLayer

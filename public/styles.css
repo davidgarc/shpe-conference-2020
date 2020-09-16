@@ -1,0 +1,41 @@
+body {
+  background: #eee;
+  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+}
+
+
+header {
+  background: black;
+  padding: 10px 20px
+}
+
+section {
+  background: white;
+  color: gray;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: row;
+}
+
+div {
+  background: red;
+  margin: auto;
+  width: 100px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  display: inline-block;
+  margin-right: 20px;
+}
+
+footer {
+  background: black;
+  padding: 10px 20px
+}

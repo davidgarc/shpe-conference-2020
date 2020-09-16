@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Resume Details Service
+  * List of services used:
+    * API Gateway
+    * Lambdas
+    * DDB Tables
+
+  Sample SAM Template for AWS
+
+Parameters:
+  Environment:
+    Description: Environment
+    Default: dev
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+      - dev
+    ConstraintDescription: Must specify a valid environment dev, test or prod.
+
+Resources:
+  ApiStack:
+    Type: AWS::CloudFormation::Stack
+    DependsOn:
+      - TablesStack
+      - SharedLayersStack
+    Properties:
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/api/packaged.yaml']]
+      Parameters:
+        Environment: !Ref Environment
+        AwsLayer: !GetAtt SharedLayersStack.Outputs.AwsLayer
+        ResumeTable: !GetAtt TablesStack.Outputs.ResumeTable
+
+  TablesStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/tables/packaged.yaml']]
+      Parameters:
+        Environment: !Ref Environment
+
+  SharedLayersStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/sharedLayer/packaged.yaml']]
+      Parameters:
+        Environment: !Ref Environment
+
+Outputs:
+  ApiUri:
+    Description: "API Gateway endpoint URI"
+    Value: !GetAtt ApiStack.Outputs.ApiUri

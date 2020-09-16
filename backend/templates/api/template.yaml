@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Resume Demo App API Configuration
+
+  SAM Template for AWS
+
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    Timeout: 3
+    Handler: handler.lambdaHandler
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref ExperiencesTable
+
+Parameters:
+  Environment:
+    Description: Environment
+    Default: dev
+    Type: String
+    AllowedValues:
+      - prod
+      - test
+      - dev
+    ConstraintDescription: Must specify a valid environment dev, test or prod.
+  AwsLayer:
+    Type: String
+  ExperiencesTable:
+    Type: String
+
+Mappings:
+  CreateExperienceMap:
+    ApiFunction:
+      name: resume_demo_api_CreateExperience_fn
+  GetOrdersMap:
+    ApiFunction:
+      name: resume_demo_api_GetExperiences_fn
+
+Resources:
+  OrdersDemoApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Environment
+      DefinitionBody:
+        'Fn::Transform':
+          Name: AWS::Include
+          Parameters:
+            Location: 's3://resume-demo-configs/templates/api/api-definition.yaml'
+
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Join ["_", [!FindInMap [CreateOrderMap, ApiFunction, name], !Ref 'Environment']]
+      CodeUri: ../../src/orderService/addOrder
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /orders
+            Method: POST
+            ApiId: !Ref OrdersDemoApi
+      Layers:
+        - !Ref AwsLayer
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+
+  GetOrderFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: !Join ["_", [!FindInMap [GetOrdersMap, ApiFunction, name], !Ref 'Environment']]
+      CodeUri: ../../src/orderService/getOrder
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /orders/{orderId}
+            Method: GET
+            ApiId: !Ref OrdersDemoApi
+      Layers:
+        - !Ref AwsLayer
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref OrdersTable
+
+Outputs:
+  ApiUri:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${OrdersDemoApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}"
+
+  CreateOrderFunction:
+    Description: "Create Order Lambda Function ARN"
+    Value: !GetAtt CreateOrderFunction.Arn
+
+  GetOrderFunction:
+    Description: "Get Order Lambda Function ARN"
+    Value: !GetAtt GetOrderFunction.Arn

@@ -1,0 +1,9 @@
+{
+  "name": "nodejs",
+  "version": "1.0.0",
+  "dependencies": {
+    "aws-sdk": "^2.701.0",
+    "http-status-codes": "^1.4.0",
+    "short-uuid": "^3.1.1"
+  }
+}
