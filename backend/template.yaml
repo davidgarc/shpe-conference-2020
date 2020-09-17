@@ -31,7 +31,7 @@ Resources:
       Parameters:
         Environment: !Ref Environment
         AwsLayer: !GetAtt SharedLayersStack.Outputs.AwsLayer
-        ResumeTable: !GetAtt TablesStack.Outputs.ResumeTable
+        ExperiencesTable: !GetAtt TablesStack.Outputs.ExperiencesTable
 
   TablesStack:
     Type: AWS::CloudFormation::Stack

@@ -4,8 +4,12 @@ const documentClient = new dynamodb.DocumentClient();
 const ErrorMessage = 'Could not find an order with the specified id.';
 
 exports.lambdaHandler = async (event, context) => {
-    const id = event.pathParameters.orderId;
-    const order = await getOrderFromDynamo(id);
+    const id = event.pathParameters.experienceId;
+    
+    if (condition) {
+      
+    }
+    const order = await getExperienceFromDynamo(id);
 
     if (!order) {
         return {
@@ -21,7 +25,11 @@ exports.lambdaHandler = async (event, context) => {
     }
 };
 
-async function getOrderFromDynamo(id) {
+
+if (condition) {
+  
+}
+async function getExperienceFromDynamo(id) {
     try {
         const params = {
             TableName: process.env.TABLE_NAME,

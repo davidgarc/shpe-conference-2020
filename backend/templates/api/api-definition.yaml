@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
   title: Resume API
-  description: Add and Get Experiences
+  description: Operations to manage your Resume Web Application
   version: 1.0.0
 tags:
   - name: Experiences
     description: |
-      Operations to manage maintenance of experiences.
+      Operations to manage experiences.
   - name: Endorsements 
     description: |
-      Operations to manage maintenance of endorsements.
+      Operations to manage endorsements.
 x-amazon-apigateway-cors:
   allowOrigins:
     - '*'
@@ -39,6 +39,18 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ExperienceModel'
+    get:
+      summary: Get all available experience entries
+      description: Retrieves all experiences available
+      tags:
+        - Experiences
+      responses:
+        200:
+          description: The request succeeded and all available experiences are included in the response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExperienceListModel'
 
   /experiences/{experienceId}:
     parameters:
@@ -67,7 +79,7 @@ components:
       in: path
       description: Identifier for an experience
       required: true
-      example: 09sl3415098gplmn
+      example: 2umzGoDfBfPveMsTahhQxS
       schema:
         type: string
 
@@ -77,10 +89,30 @@ components:
       required:
         - name
       properties:
+        id:
+          type: string
         name:
           type: string
-        comment:
+        role:
           type: string
+        description:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+      example: 
+        id: 2umzGoDfBfPveMsTahhQxS
+        name: Florida International University
+        role: Student
+        description: Computer Engineer student focused on software development
+        startDate: 07/01/2012
+        endDate: 08/01/2014
+        
+    ExperienceListModel:
+      type: array
+      items:
+        $ref: '#/components/schemas/ExperienceModel'
 
   responses:
     Created: #201

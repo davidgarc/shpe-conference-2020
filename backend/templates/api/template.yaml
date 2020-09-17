@@ -38,7 +38,7 @@ Mappings:
       name: resume_demo_api_GetExperiences_fn
 
 Resources:
-  OrdersDemoApi:
+  ResumeDemoApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: !Ref Environment
@@ -46,25 +46,25 @@ Resources:
         'Fn::Transform':
           Name: AWS::Include
           Parameters:
-            Location: 's3://resume-demo-configs/templates/api/api-definition.yaml'
+            Location: !Join ["", 's3://resume-demo-configs-', !Ref 'Environment', '/templates/api/api-definition.yaml']
 
-  CreateOrderFunction:
+  CreateExperienceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       FunctionName: !Join ["_", [!FindInMap [CreateOrderMap, ApiFunction, name], !Ref 'Environment']]
-      CodeUri: ../../src/orderService/addOrder
+      CodeUri: ../../src/resumeService/addExperience
       Events:
         ApiEvent:
           Type: HttpApi
           Properties:
             Path: /orders
             Method: POST
-            ApiId: !Ref OrdersDemoApi
+            ApiId: !Ref ResumeDemoApi
       Layers:
         - !Ref AwsLayer
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref OrdersTable
+            TableName: !Ref ExperiencesTable
 
   GetOrderFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -72,12 +72,12 @@ Resources:
       FunctionName: !Join ["_", [!FindInMap [GetOrdersMap, ApiFunction, name], !Ref 'Environment']]
       CodeUri: ../../src/orderService/getOrder
       Events:
-        ApiEvent:
+        GetEvent:
           Type: HttpApi
           Properties:
             Path: /orders/{orderId}
             Method: GET
-            ApiId: !Ref OrdersDemoApi
+            ApiId: !Ref ResumeDemoApi
       Layers:
         - !Ref AwsLayer
       Policies:
