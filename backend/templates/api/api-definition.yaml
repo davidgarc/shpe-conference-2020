@@ -88,9 +88,8 @@ components:
       type: object
       required:
         - name
+        - startDate
       properties:
-        id:
-          type: string
         name:
           type: string
         role:

@@ -4,45 +4,67 @@ const documentClient = new dynamodb.DocumentClient();
 const ErrorMessage = 'Could not find an order with the specified id.';
 
 exports.lambdaHandler = async (event, context) => {
-    const id = event.pathParameters.experienceId;
-    
-    if (condition) {
-      
-    }
-    const order = await getExperienceFromDynamo(id);
+    console.log(event);
+    let experience;
 
-    if (!order) {
-        return {
-            statusCode: httpStatusCode.NOT_FOUND,
-            body: { message: ErrorMessage }
-        };
+    if (event.pathParameters && event.pathParameters.experienceId) {
+      experience = await getExperienceFromDynamo(event.pathParameters.experienceId);
+    } else if (event.pathParameters && event.pathParameters.educationId) {
+      experience = await getExperienceFromDynamo(event.pathParameters.educationId);
+    } else if (event.requestContext.http.path.includes('experiences')) {
+      return await getExperiencesFromDynamo('experience');
+    } else if (event.requestContext.http.path.includes('educations')) {
+      return await getExperiencesFromDynamo('education');
     }
-    else {
-        order.id = order.PK;
-        delete order.PK;
 
-        return order;
+    if (!experience) {
+      return {
+          statusCode: httpStatusCode.NOT_FOUND,
+          body: { message: ErrorMessage }
+      };
+    } else {
+      return experience;
     }
 };
 
-
-if (condition) {
-  
-}
 async function getExperienceFromDynamo(id) {
+  try {
+    const params = {
+        TableName: process.env.TABLE_NAME,
+        Key: {
+            id: id
+        }
+    };
+
+    const result = await documentClient.get(params).promise();
+
+    return result.Item;
+} catch (err) {
+    console.log('An error occurred getting experience from Dynamo');
+    console.log(err);
+}
+}
+
+async function getExperiencesFromDynamo(type) {
     try {
         const params = {
             TableName: process.env.TABLE_NAME,
-            Key: {
-                PK: id
+            ScanIndexForward: false,
+            IndexName: "type_startDate",
+            KeyConditionExpression: "#type = :type",
+            ExpressionAttributeValues: {
+              ":type": type
+            },
+            ExpressionAttributeNames: {
+              "#type": "type"
             }
         };
 
-        const result = await documentClient.get(params).promise();
+        const result = await documentClient.query(params).promise();
 
-        return result.Item;
+        return result.Items;
     } catch (err) {
-        console.log('An error occurred getting order from Dynamo');
+        console.log('An error occurred getting experiences from Dynamo');
         console.log(err);
     }
 }

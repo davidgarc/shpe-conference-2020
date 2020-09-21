@@ -33,7 +33,7 @@ Mappings:
   CreateExperienceMap:
     ApiFunction:
       name: resume_demo_api_CreateExperience_fn
-  GetOrdersMap:
+  GetExperiencesMap:
     ApiFunction:
       name: resume_demo_api_GetExperiences_fn
 
@@ -46,18 +46,25 @@ Resources:
         'Fn::Transform':
           Name: AWS::Include
           Parameters:
-            Location: !Join ["", 's3://resume-demo-configs-', !Ref 'Environment', '/templates/api/api-definition.yaml']
+            # Location: !Join ["", 's3://resume-demo-configs-', !Ref 'Environment', '/templates/api/api-definition.yaml']
+            Location: 's3://resume-demo-configs-dev/templates/api/api-definition.yaml'
 
   CreateExperienceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      FunctionName: !Join ["_", [!FindInMap [CreateOrderMap, ApiFunction, name], !Ref 'Environment']]
+      FunctionName: !Join ["_", [!FindInMap [CreateExperienceMap, ApiFunction, name], !Ref 'Environment']]
       CodeUri: ../../src/resumeService/addExperience
       Events:
-        ApiEvent:
+        ExperienceEvent:
           Type: HttpApi
           Properties:
-            Path: /orders
+            Path: /experiences
+            Method: POST
+            ApiId: !Ref ResumeDemoApi
+        EducationEvent:
+          Type: HttpApi
+          Properties:
+            Path: /educations
             Method: POST
             ApiId: !Ref ResumeDemoApi
       Layers:
@@ -66,33 +73,51 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref ExperiencesTable
 
-  GetOrderFunction:
+  GetExperienceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      FunctionName: !Join ["_", [!FindInMap [GetOrdersMap, ApiFunction, name], !Ref 'Environment']]
-      CodeUri: ../../src/orderService/getOrder
+      FunctionName: !Join ["_", [!FindInMap [GetExperiencesMap, ApiFunction, name], !Ref 'Environment']]
+      CodeUri: ../../src/resumeService/getExperience
       Events:
-        GetEvent:
+        GetExperienceEvent:
           Type: HttpApi
           Properties:
-            Path: /orders/{orderId}
+            Path: /experiences/{experienceId}
+            Method: GET
+            ApiId: !Ref ResumeDemoApi
+        GetExperiencesEvent:
+          Type: HttpApi
+          Properties:
+            Path: /experiences
+            Method: GET
+            ApiId: !Ref ResumeDemoApi
+        GetEducationEvent:
+          Type: HttpApi
+          Properties:
+            Path: /educations/{educationId}
+            Method: GET
+            ApiId: !Ref ResumeDemoApi
+        GetEducationsEvent:
+          Type: HttpApi
+          Properties:
+            Path: /educations
             Method: GET
             ApiId: !Ref ResumeDemoApi
       Layers:
         - !Ref AwsLayer
       Policies:
         - DynamoDBReadPolicy:
-            TableName: !Ref OrdersTable
+            TableName: !Ref ExperiencesTable
 
 Outputs:
   ApiUri:
     Description: "API Gateway endpoint URL"
-    Value: !Sub "https://${OrdersDemoApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}"
+    Value: !Sub "https://${ResumeDemoApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Environment}"
 
-  CreateOrderFunction:
-    Description: "Create Order Lambda Function ARN"
-    Value: !GetAtt CreateOrderFunction.Arn
+  CreateExperienceFunction:
+    Description: "Create Experience Lambda Function ARN"
+    Value: !GetAtt CreateExperienceFunction.Arn
 
-  GetOrderFunction:
-    Description: "Get Order Lambda Function ARN"
-    Value: !GetAtt GetOrderFunction.Arn
+  GetExperienceFunction:
+    Description: "Get Experience Lambda Function ARN"
+    Value: !GetAtt GetExperienceFunction.Arn

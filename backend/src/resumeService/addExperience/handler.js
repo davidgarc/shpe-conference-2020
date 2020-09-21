@@ -1,21 +1,28 @@
 const short = require('short-uuid');
 const httpStatusCode = require('http-status-codes');
-const ErrorMessage = 'An error occurred saving the Order.';
-const BadRequest = 'Name is a required field';
+const ErrorMessage = 'An error occurred saving the Experience.';
+const BadRequest = 'Missing a required field. Check API Documentation.';
 const dynamodb = require('aws-sdk/clients/dynamodb');
 const documentClient = new dynamodb.DocumentClient();
 
 exports.lambdaHandler = async (event, context) => {
-    const order = JSON.parse(event.body);
+    console.log(event);
+    const experience = JSON.parse(event.body);
 
-    if (!order.name) {
+    if (!experience.name || !experience.startDate) {
         return {
             statusCode: httpStatusCode.BAD_REQUEST,
             body: { message: BadRequest }
         };
     }
 
-    const id = await saveToDynamo(order);
+    let id;
+    if (event.requestContext.http.path.includes('experiences')) {
+      id = await saveToDynamo(experience, 'experience');
+    } else if (event.requestContext.http.path.includes('educations')) {
+      id = await saveToDynamo(experience, 'education');
+    }
+
     if (!id) {
         return {
             statusCode: httpStatusCode.INTERNAL_SERVER_ERROR,
@@ -27,17 +34,17 @@ exports.lambdaHandler = async (event, context) => {
     }
 };
 
-async function saveToDynamo(order) {
+async function saveToDynamo(experience, type) {
     try {
-        const id = short.generate();
-        order.PK = id;
+        experience.id = short.generate();
+        experience.type = type;
         const params = {
             TableName: process.env.TABLE_NAME,
-            Item: order
+            Item: experience
         };
 
         await documentClient.put(params).promise();
-        return id;
+        return experience.id;
     } catch (err) {
         console.log('An error occurred adding item to Dynamo');
         console.log(err);
