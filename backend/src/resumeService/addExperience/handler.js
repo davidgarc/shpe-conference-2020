@@ -21,6 +21,8 @@ exports.lambdaHandler = async (event, context) => {
       id = await saveToDynamo(experience, 'experience');
     } else if (event.requestContext.http.path.includes('educations')) {
       id = await saveToDynamo(experience, 'education');
+    } else if (event.requestContext.http.path.includes('endorsements')) {
+      id = await saveToDynamo(experience, 'endorsement');
     }
 
     if (!id) {

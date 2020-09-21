@@ -15,8 +15,10 @@ exports.lambdaHandler = async (event, context) => {
       return await getExperiencesFromDynamo('experience');
     } else if (event.requestContext.http.path.includes('educations')) {
       return await getExperiencesFromDynamo('education');
+    } else if (event.requestContext.http.path.includes('endorsements')) {
+      return await getExperiencesFromDynamo('endorsement');
     }
-
+    
     if (!experience) {
       return {
           statusCode: httpStatusCode.NOT_FOUND,

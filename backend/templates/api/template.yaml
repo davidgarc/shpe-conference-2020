@@ -67,6 +67,12 @@ Resources:
             Path: /educations
             Method: POST
             ApiId: !Ref ResumeDemoApi
+        EndorsementEvent:
+          Type: HttpApi
+          Properties:
+            Path: /endorsements
+            Method: POST
+            ApiId: !Ref ResumeDemoApi
       Layers:
         - !Ref AwsLayer
       Policies:
@@ -101,6 +107,12 @@ Resources:
           Type: HttpApi
           Properties:
             Path: /educations
+            Method: GET
+            ApiId: !Ref ResumeDemoApi
+        GetEndorsementsEvent:
+          Type: HttpApi
+          Properties:
+            Path: /endorsements
             Method: GET
             ApiId: !Ref ResumeDemoApi
       Layers:
