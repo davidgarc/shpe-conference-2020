@@ -6,6 +6,7 @@ Description: >
     * API Gateway
     * Lambdas
     * DDB Tables
+    * S3 buckets
 
   Sample SAM Template for AWS
 
@@ -19,6 +20,9 @@ Parameters:
       - test
       - dev
     ConstraintDescription: Must specify a valid environment dev, test or prod.
+  WebsiteBucketName:
+    Description: Unique name for the website bucket
+    Type: String
 
 Resources:
   ApiStack:
@@ -47,7 +51,18 @@ Resources:
       Parameters:
         Environment: !Ref Environment
 
+  StorageStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/storage/packaged.yaml']]
+      Parameters:
+        Environment: !Ref Environment
+        BucketName: !Ref WebsiteBucketName
+
 Outputs:
   ApiUri:
     Description: "API Gateway endpoint URI"
     Value: !GetAtt ApiStack.Outputs.ApiUri
+  WebsiteULR:
+    Description: "Resume Website URL"
+    Value: !GetAtt StorageStack.Outputs.WebsiteURL

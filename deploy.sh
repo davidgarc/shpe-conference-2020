@@ -4,8 +4,9 @@ die () {
     exit 1
 }
 
-[ "$#" -eq 1 ] || die "1 argument required, $# provided"
+[ "$#" -eq 2 ] || die "2 argument required, $# provided"
 echo $1 | grep -E -q '^dev|test|prod$' || die "Valid environment argument required (Ex: dev, test, prod), $1 provided"
+echo $2 | grep -E -q '^[a-z0-9-]*$' || die "Valid website can only be alphanumberic and dashes (-)  (Ex: resume-website), $2 provided"
 
 find . -name template.yaml | while read -r fname; do
   templateName="${fname}"
@@ -21,10 +22,10 @@ aws s3 cp --recursive --exclude "*template.yaml" backend/templates "s3://resume-
 
 echo ""
 echo "Deploying application"
-sam deploy --template-file backend/packaged.yaml --stack-name "resume-demo-app-$1" --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides "Environment=$1"
+sam deploy --template-file backend/packaged.yaml --stack-name "resume-demo-app-$1" --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides "Environment=$1 WebsiteBucketName=$2"
 
 echo ""
 echo "Coping to website assets"
-aws s3 cp --recursive public "s3://shpe-resume/"
+aws s3 cp --recursive public "s3://$2/"
 
 echo "Done deploying $1 application"
