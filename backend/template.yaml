@@ -23,6 +23,9 @@ Parameters:
   WebsiteBucketName:
     Description: Unique name for the website bucket
     Type: String
+  ConfigurationBucketName:
+    Description: Unique name for the configuration bucket
+    Type: String
 
 Resources:
   ApiStack:
@@ -31,30 +34,31 @@ Resources:
       - TablesStack
       - SharedLayersStack
     Properties:
-      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/api/packaged.yaml']]
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/', !Ref 'ConfigurationBucketName', '/templates/api/packaged.yaml']]
       Parameters:
         Environment: !Ref Environment
+        ConfigurationBucketName: !Ref ConfigurationBucketName
         AwsLayer: !GetAtt SharedLayersStack.Outputs.AwsLayer
         ExperiencesTable: !GetAtt TablesStack.Outputs.ExperiencesTable
 
   TablesStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/tables/packaged.yaml']]
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/', !Ref 'ConfigurationBucketName', '/templates/tables/packaged.yaml']]
       Parameters:
         Environment: !Ref Environment
 
   SharedLayersStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/sharedLayer/packaged.yaml']]
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/', !Ref 'ConfigurationBucketName', '/templates/sharedLayer/packaged.yaml']]
       Parameters:
         Environment: !Ref Environment
 
   StorageStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/resume-demo-configs-', !Ref 'Environment', '/templates/storage/packaged.yaml']]
+      TemplateURL: !Join ["", ['https://s3.us-east-1.amazonaws.com/', !Ref 'ConfigurationBucketName', '/templates/storage/packaged.yaml']]
       Parameters:
         Environment: !Ref Environment
         BucketName: !Ref WebsiteBucketName

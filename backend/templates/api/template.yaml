@@ -24,6 +24,9 @@ Parameters:
       - test
       - dev
     ConstraintDescription: Must specify a valid environment dev, test or prod.
+  ConfigurationBucketName:
+    Description: Unique name for the configuration bucket
+    Type: String
   AwsLayer:
     Type: String
   ExperiencesTable:
@@ -46,8 +49,7 @@ Resources:
         'Fn::Transform':
           Name: AWS::Include
           Parameters:
-            Location: !Join ["", ['s3://resume-demo-configs-', !Ref 'Environment', '/templates/api/api-definition.yaml']]
-            # Location: 's3://resume-demo-configs-dev/templates/api/api-definition.yaml'
+            Location: !Join ["", ['s3://', !Ref 'ConfigurationBucketName', '/templates/api/api-definition.yaml']]
 
   CreateExperienceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction

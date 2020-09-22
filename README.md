@@ -16,19 +16,41 @@ To use the SAM CLI, you need the following tools.
 
 * SAM CLI - [Install the SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
 * AWS CLI - [Install the AWS CLI](https://aws.amazon.com/cli/)
-* Node.js - [Install Node.js 10](https://nodejs.org/en/), including the NPM package management tool.
+* Node.js - [Install Node.js 12](https://nodejs.org/en/)
 
-To build and deploy your application for the first time, run the following in your shell:
-Valid environments are dev, test, prod.
+Once you have installed the requirements above, navigate to the shared layer path `backend/src/sharedLayers/libs/awsLayer/nodejs` and run the command below:
 ```bash
-./deploy.sh <environment>
+npm install
 ```
 
-The first command will build the source of your application and will package and deploy your application to AWS
-
-Make sure you have created the bucket name were the packaged templates will be copies. Default ones are:
+Now we are ready to deploy our application. To deploy your application run the following in your shell:
+Valid environments are dev, test, prod. Bucket names, if new needs to be unique across AWS regions.
+```bash
+node deploy.js <environment> <configs-bucket-name> <website-bucket-name>
 ```
-orders-demo-configs-<environment>
+
+You can find your API Gateway Endpoint URL and Website URL in the output values displayed after deployment.
+
+Sample Output:
+```bash
+CloudFormation outputs from deployed stack
+-------------------------------------------------------------------------------------------------
+Outputs
+-------------------------------------------------------------------------------------------------
+Key                 WebsiteULR
+Description         Resume Website URL
+Value               http://shpe-resume-david.s3-website-us-east-1.amazonaws.com
+
+Key                 ApiUri
+Description         API Gateway endpoint URI
+Value               https://2e4t1u3tfl.execute-api.us-east-1.amazonaws.com/dev
+-------------------------------------------------------------------------------------------------
 ```
 
-You can find your API Gateway Endpoint URL in the output values displayed after deployment.
+Now you need to update the variable *API_ENDPOINT* in the file `public/scripts.js` with the value from your ApiUri
+
+Deploy your website files with the following command:
+```bash
+aws s3 cp --recursive public "s3://<website-bucket-name>/"
+```
+Note: The website bucket name should be the one that you provided in the deploy script.
