@@ -1,4 +1,4 @@
-var API_ENDPOINT = "<REST API URL HERE";
+var API_ENDPOINT = "<REST API URL HERE>";
 
 $(document).ready(function () {
   $.ajax({
@@ -7,14 +7,14 @@ $(document).ready(function () {
     success: function (response) {
       $.each(response, function (i, data) {
         var startDate = new Date(data['startDate']);
-        var endDate = new Date();
+        var endDate = 'Current';
         if (data['endDate']) {
-          endDate = new Date(data['endDate']);
+          endDate = new Date(data['endDate']).getFullYear();
         }
   
         $("#education").append(`
           <div class="entry">
-            <h6>${startDate.getFullYear()} - ${endDate.getFullYear()}</h6>
+            <h6>${startDate.getFullYear()} - ${endDate}</h6>
             <h4>${data['name']}</h4>
             <p>${data['description']}</p>
           </div>
@@ -32,14 +32,14 @@ $(document).ready(function () {
     success: function (response) {
       $.each(response, function (i, data) {
         var startDate = new Date(data['startDate']);
-        var endDate = new Date();
+        var endDate = 'Current';
         if (data['endDate']) {
-          endDate = new Date(data['endDate']);
+          endDate = new Date(data['endDate']).getFullYear();
         }
 
         $("#experience").append(`
           <div class="entry">
-            <h6>${startDate.getFullYear()} - ${endDate.getFullYear()}</h6>
+            <h6>${startDate.getFullYear()} - ${endDate}</h6>
             <h4>${data['name']}</h4>
             <p>${data['description']}</p>
           </div>
