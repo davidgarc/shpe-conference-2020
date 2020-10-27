@@ -69,7 +69,7 @@ aws s3 cp --recursive public "s3://<website-bucket-name>/"
 
 ## Sample Requests
 
-**Note**: Remember to replace the APIUri with yours.
+**Note**: Remember to replace the APIUri with yours. You can omit the *endDate* field if you are still working on that experience or education.
 
 ### Create an endorsement entry (uri path: /endorsements)
 
@@ -145,5 +145,3 @@ curl --location --request POST 'https://vvmvzb0otg.execute-api.us-east-1.amazona
     "startDate": "09/15/2014"
 }
 ```
-
-**Note**: You can omit the *endDate* field if you are still working on that experience or education.
