@@ -65,7 +65,51 @@ aws s3 cp --recursive public "s3://<website-bucket-name>/"
 
 6. Navigate to your new Resume Web Application.
 
-7. You will notice that the details you added are there but we are missing the education, experience and endorsements details. We need to call our REST API so we can create this data. Use the payload samples below to create your own entries.
+7. You will notice that the details you added are there but we are missing the education, experience and endorsements details. We need to call our REST API so we can create this data. Customize the payload samples and request samples below to create your own entries.
+
+## Sample Requests
+
+**Note**: Remember to replace the APIUri with yours.
+
+### Create an endorsement entry (uri path: /endorsements)
+
+```sh
+curl --location --request POST 'https://vvmvzb0otg.execute-api.us-east-1.amazonaws.com/dev/endorsements' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Bill Gates",
+    "description": "David is a great!!!",
+    "startDate": "01/01/2020"
+}'
+```
+
+### Create an experience entry (uri path: /experiences)
+
+```sh
+curl --location --request POST 'https://vvmvzb0otg.execute-api.us-east-1.amazonaws.com/dev/experiences' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "CADMART",
+    "role": "Network Engineer",
+    "description": "Network Engineer working on VoIP and SMB networks.",
+    "startDate": "09/15/2011",
+    "endDate": "09/15/2013"
+}'
+```
+
+### Create an education entry (uri path: /educations)
+
+```sh
+curl --location --request POST 'https://vvmvzb0otg.execute-api.us-east-1.amazonaws.com/dev/educations' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "name": "Florida International (FIU)",
+    "role": "Research Assistant",
+    "description": "Develop driver for new Solid State Drive(SSD) architecture",
+    "startDate": "06/01/2014",
+    "endDate": "06/01/2014"
+}'
+```
 
 ## Sample Payloads
 
