@@ -16,6 +16,8 @@ In order for us to deploy our application you need the following software instal
 * AWS CLI - [Install the AWS CLI](https://aws.amazon.com/cli/)
 * Node.js - [Install Node.js 12](https://nodejs.org/en/)
 
+You need to create an Amazon S3 configuration bucket.
+
 ## Deploy your Resume Web Application
 
 1. Navigate to the shared layer path `backend/src/sharedLayers/libs/awsLayer/nodejs` and run the command below:
