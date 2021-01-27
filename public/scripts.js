@@ -1,4 +1,4 @@
-var API_ENDPOINT = "<REST API URL HERE>";
+var API_ENDPOINT = "https://8kjgipfzq5.execute-api.us-east-1.amazonaws.com/test";
 
 $(document).ready(function () {
   $.ajax({

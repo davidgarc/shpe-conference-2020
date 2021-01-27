@@ -19,7 +19,7 @@ Parameters:
 Mappings:
   ResumeMap:
     experiencesTable:
-      name: resume_demo_experiences_table
+      name: resume_demo_experiences_web_app_table
 
 Resources:
   ExperiencesTable:

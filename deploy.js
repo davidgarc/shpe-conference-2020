@@ -89,9 +89,9 @@ async function deployment() {
 
   cmds.push({
     name: 'cloudFormationExec',
-    cmd: 'sam deploy  --template-file backend/packaged.yaml --stack-name shpe-resume-' + environment +
+    cmd: 'sam deploy  --template-file backend/packaged.yaml --stack-name web-app-demo-' + environment +
       ' --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND' + 
-      ' --parameter-overrides EnvType=' + environment + ' WebsiteBucketName=' + websiteBucket + ' ConfigurationBucketName=' + configBucket
+      ' --parameter-overrides Environment=' + environment + ' WebsiteBucketName=' + websiteBucket + ' ConfigurationBucketName=' + configBucket
   });
 
   for (let cmd of cmds) {
